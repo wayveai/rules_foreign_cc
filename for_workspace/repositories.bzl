@@ -18,9 +18,9 @@ def repositories():
         name = "make",
         build_file_content = _all_content,
         sha256 = "e05fdde47c5f7ca45cb697e973894ff4f5d79e13b750ed57d7b66d8defc78e19",
-        strip_prefix = "make-4.3",
+        strip_prefix = "make-4.1",
         urls = [
-            "http://mirror.rit.edu/gnu/make/make-4.3.tar.gz",
+            "http://mirror.rit.edu/gnu/make/make-4.1.tar.gz",
         ],
     )
 
