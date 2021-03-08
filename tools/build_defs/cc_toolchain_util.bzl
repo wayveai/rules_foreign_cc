@@ -235,7 +235,7 @@ def get_env_vars(ctx):
 
     vars = dict()
 
-    for action_name in [C_COMPILE_ACTION_NAME, CPP_LINK_STATIC_LIBRARY_ACTION_NAME, CPP_LINK_EXECUTABLE_ACTION_NAME, CPP_LINK_DINAMYC_LIBRARY_ACTION_NAME]:
+    for action_name in [C_COMPILE_ACTION_NAME, CPP_LINK_STATIC_LIBRARY_ACTION_NAME, CPP_LINK_EXECUTABLE_ACTION_NAME, CPP_LINK_DYNAMIC_LIBRARY_ACTION_NAME]:
         vars.update(cc_common.get_environment_variables(
             feature_configuration = feature_configuration,
             action_name = action_name,
