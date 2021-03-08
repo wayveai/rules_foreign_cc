@@ -298,9 +298,6 @@ def cc_external_rule_impl(ctx, attrs):
     out_cc_info = _define_out_cc_info(ctx, attrs, inputs, outputs)
 
     cc_env = _correct_path_variable(get_env_vars(ctx))
-    print(cc_env)
-    cc_env.update(ctx.configuration.default_shell_env)
-    print(ctx.configuration.default_shell_env)
     set_cc_envs = ""
     execution_os_name = os_name(ctx)
     if execution_os_name != "osx":
@@ -401,9 +398,14 @@ def cc_external_rule_impl(ctx, attrs):
         extra_tools.append(wrapper)
         wrapper = batch_wrapper
 
+    print(cc_toolchain.all_files)
+
     ctx.actions.run(
         mnemonic = "Cc" + attrs.configure_name.capitalize() + "MakeRule",
-        inputs = depset(inputs.declared_inputs),
+        inputs = depset(
+            inputs.declared_inputs,
+            transitive = [cc_toolchain.all_files],
+        ),
         outputs = rule_outputs + [
             empty.file,
             wrapped_outputs.log_file,
