@@ -297,9 +297,8 @@ def cc_external_rule_impl(ctx, attrs):
     outputs = _define_outputs(ctx, attrs, lib_name)
     out_cc_info = _define_out_cc_info(ctx, attrs, inputs, outputs)
 
-    cc_env = get_env_vars(ctx)
+    cc_env = _correct_path_variable(get_env_vars(ctx))
     cc_env.update(ctx.configuration.default_shell_env)
-    cc_env = _correct_path_variable(cc_env)
     set_cc_envs = ""
     execution_os_name = os_name(ctx)
     if execution_os_name != "osx":
@@ -335,6 +334,7 @@ def cc_external_rule_impl(ctx, attrs):
         )
         for key, value in getattr(ctx.attr, "env", {}).items()
     ]
+    print(define_variables)
 
     make_commands = []
     for line in attrs.make_commands:
