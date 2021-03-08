@@ -298,7 +298,9 @@ def cc_external_rule_impl(ctx, attrs):
     out_cc_info = _define_out_cc_info(ctx, attrs, inputs, outputs)
 
     cc_env = _correct_path_variable(get_env_vars(ctx))
+    print(cc_env)
     cc_env.update(ctx.configuration.default_shell_env)
+    print(ctx.configuration.default_shell_env)
     set_cc_envs = ""
     execution_os_name = os_name(ctx)
     if execution_os_name != "osx":
@@ -334,7 +336,6 @@ def cc_external_rule_impl(ctx, attrs):
         )
         for key, value in getattr(ctx.attr, "env", {}).items()
     ]
-    print(define_variables)
 
     make_commands = []
     for line in attrs.make_commands:
@@ -413,7 +414,7 @@ def cc_external_rule_impl(ctx, attrs):
         ),
         # TODO: Default to never using the default shell environment to make builds more hermetic. For now, every platform
         # but MacOS will take the default PATH passed by Bazel, not that from cc_toolchain.
-        use_default_shell_env = execution_os_name != "osx",
+        use_default_shell_env = False,# execution_os_name != "osx",
         executable = wrapper,
         execution_requirements = execution_requirements,
         # this is ignored if use_default_shell_env = True
