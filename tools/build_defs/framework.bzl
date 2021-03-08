@@ -398,12 +398,11 @@ def cc_external_rule_impl(ctx, attrs):
         extra_tools.append(wrapper)
         wrapper = batch_wrapper
 
-    print(cc_env)
-
     ctx.actions.run(
         mnemonic = "Cc" + attrs.configure_name.capitalize() + "MakeRule",
         inputs = depset(
             inputs.declared_inputs,
+            transitive = [cc_toolchain.all_files],
         ),
         outputs = rule_outputs + [
             empty.file,
@@ -411,11 +410,11 @@ def cc_external_rule_impl(ctx, attrs):
         ],
         tools = depset(
             [wrapped_outputs.script_file] + extra_tools + ctx.files.data + ctx.files.tools_deps + ctx.files.additional_tools,
-            transitive = [cc_toolchain.all_files] + [data[DefaultInfo].default_runfiles.files for data in data_dependencies],
+            transitive = [data[DefaultInfo].default_runfiles.files for data in data_dependencies],
         ),
         # TODO: Default to never using the default shell environment to make builds more hermetic. For now, every platform
         # but MacOS will take the default PATH passed by Bazel, not that from cc_toolchain.
-        use_default_shell_env = False,# execution_os_name != "osx",
+        use_default_shell_env = execution_os_name != "osx",
         executable = wrapper,
         execution_requirements = execution_requirements,
         # this is ignored if use_default_shell_env = True
