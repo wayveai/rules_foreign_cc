@@ -317,6 +317,8 @@ def cc_external_rule_impl(ctx, attrs):
     # we need this fictive file in the root to get the path of the root in the script
     empty = fictive_file_in_genroot(ctx.actions, ctx.label.name)
 
+    cc_toolchain = find_cpp_toolchain(ctx)
+
     data_dependencies = ctx.attr.data + ctx.attr.tools_deps + ctx.attr.additional_tools
 
     define_variables = [
@@ -329,7 +331,7 @@ def cc_external_rule_impl(ctx, attrs):
         "export {key}={value}".format(
             key = key,
             # Prepend the exec root to each $(execpath ) lookup because the working directory will not be the exec root.
-            value = ctx.expand_location(value.replace("$(execpath ", "$$EXT_BUILD_ROOT$$/$(execpath "), data_dependencies),
+            value = ctx.expand_location(value.replace("$(execpath ", "$$EXT_BUILD_ROOT$$/$(execpath "), data_dependencies + [cc_toolchain.all_files]),
         )
         for key, value in getattr(ctx.attr, "env", {}).items()
     ]
@@ -374,7 +376,6 @@ def cc_external_rule_impl(ctx, attrs):
     wrapped_outputs = wrap_outputs(ctx, lib_name, attrs.configure_name, script_text)
 
     rule_outputs = outputs.declared_outputs + [installdir_copy.file]
-    cc_toolchain = find_cpp_toolchain(ctx)
 
     execution_requirements = {"block-network": ""}
     if "requires-network" in ctx.attr.tags:
@@ -398,13 +399,12 @@ def cc_external_rule_impl(ctx, attrs):
         extra_tools.append(wrapper)
         wrapper = batch_wrapper
 
-    print(cc_toolchain.all_files)
+    print(define_variables)
 
     ctx.actions.run(
         mnemonic = "Cc" + attrs.configure_name.capitalize() + "MakeRule",
         inputs = depset(
             inputs.declared_inputs,
-            transitive = [cc_toolchain.all_files],
         ),
         outputs = rule_outputs + [
             empty.file,
